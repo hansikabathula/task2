@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stopwatch | SkillCraft Technology</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at top, #0b0c10, #1f2833);
+      color: #fff;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #00ffff;
+      margin-bottom: 20px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .stopwatch {
+      background: rgba(201, 143, 143, 0.05);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(196, 140, 18, 0.3);
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+
+    .time-display {
+      font-size: 3rem;
+      margin: 20px 0;
+      color: #66fcf1;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #0b0c10;
+      background: #00ffff;
+      font-weight: 600;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background: #66fcf1;
+    }
+
+    .laps {
+      margin-top: 25px;
+      max-height: 200px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .lap {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 8px 15px;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: #c5c6c7;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    footer {
+      margin-top: 40px;
+      color: #c5c6c7;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    /* Scrollbar style for laps */
+    .laps::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .laps::-webkit-scrollbar-thumb {
+      background: #00ffff;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .time-display {
+        font-size: 2.2rem;
+      }
+
+      button {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>SkillCraft Stopwatch</h1>
+
+  <div class="stopwatch">
+    <div class="time-display" id="time-display">00:00:00.00</div>
+
+    <div class="buttons">
+      <button id="start-btn">Start</button>
+      <button id="pause-btn">Pause</button>
+      <button id="reset-btn">Reset</button>
+      <button id="lap-btn">Lap</button>
+    </div>
+
+    <div class="laps" id="laps"></div>
+  </div>
+
+  <footer>© 2025 SkillCraft Technology | Stopwatch Web Application</footer>
+
+  <script>
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerInterval;
+    let isRunning = false;
+
+    const timeDisplay = document.getElementById("time-display");
+    const startBtn = document.getElementById("start-btn");
+    const pauseBtn = document.getElementById("pause-btn");
+    const resetBtn = document.getElementById("reset-btn");
+    const lapBtn = document.getElementById("lap-btn");
+    const laps = document.getElementById("laps");
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      const milliseconds = Math.floor((ms % 1000) / 10);
+
+      return (
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0") +
+        ":" +
+        String(milliseconds).padStart(2, "0")
+      );
+    }
+
+    function updateTime() {
+      const currentTime = Date.now();
+      elapsedTime = currentTime - startTime;
+      timeDisplay.textContent = formatTime(elapsedTime);
+    }
+
+    startBtn.addEventListener("click", () => {
+      if (!isRunning) {
+        startTime = Date.now() - elapsedTime;
+        timerInterval = setInterval(updateTime, 10);
+        isRunning = true;
+      }
+    });
+
+    pauseBtn.addEventListener("click", () => {
+      if (isRunning) {
+        clearInterval(timerInterval);
+        isRunning = false;
+      }
+    });
+
+    resetBtn.addEventListener("click", () => {
+      clearInterval(timerInterval);
+      isRunning = false;
+      elapsedTime = 0;
+      timeDisplay.textContent = "00:00:00.00";
+      laps.innerHTML = "";
+    });
+
+    lapBtn.addEventListener("click", () => {
+      if (isRunning) {
+        const lapTime = formatTime(elapsedTime);
+        const lapElement = document.createElement("div");
+        lapElement.classList.add("lap");
+        lapElement.innerHTML = `<span>Lap ${laps.children.length + 1}</span><span>${lapTime}</span>`;
+        laps.prepend(lapElement);
+      }
+    });
+  </script>
+</body>
+</html>
